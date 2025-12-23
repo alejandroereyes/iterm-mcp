@@ -25,6 +25,9 @@ A Model Context Protocol server that provides access to your iTerm session.
 - `write_to_terminal` - Writes to the active iTerm terminal, often used to run a command. Returns the number of lines of output produced by the command.
 - `read_terminal_output` - Reads the requested number of lines from the active iTerm terminal.
 - `send_control_character` - Sends a control character to the active iTerm terminal.
+- `write_and_read_terminal` - Executes a command and returns the terminal output in a single operation. Useful when you need both execution and output in one step.
+
+> **Note:** Some agents may default to using `write_to_terminal` and `read_terminal_output` separately. You may need to configure your agent (via system prompt or rules) to prefer `write_and_read_terminal` for a smoother single-step experience.
 
 ### Requirements
 
