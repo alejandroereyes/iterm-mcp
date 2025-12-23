@@ -66,6 +66,24 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["letter"]
         }
+      },
+      {
+        name: "write_and_read_terminal",
+        description: "Execute a command and return the terminal output after completion",
+        inputSchema: {
+          type: "object",
+          properties: {
+            command: {
+              type: "string",
+              description: "The command to execute"
+            },
+            linesOfOutput: {
+              type: "integer",
+              description: "Number of lines to read (default: 50)"
+            }
+          },
+          required: ["command"]
+        }
       }
     ]
   };
@@ -112,6 +130,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [{
           type: "text",
           text: `Sent control character: Control-${letter.toUpperCase()}`
+        }]
+      };
+    }
+    case "write_and_read_terminal": {
+      const executor = new CommandExecutor();
+      const command = String(request.params.arguments?.command);
+      const linesOfOutput = Number(request.params.arguments?.linesOfOutput) || 50;
+
+      // Execute command (waits for completion internally)
+      await executor.executeCommand(command);
+
+      // Read and return output
+      const output = await TtyOutputReader.call(linesOfOutput);
+
+      return {
+        content: [{
+          type: "text",
+          text: output
         }]
       };
     }
